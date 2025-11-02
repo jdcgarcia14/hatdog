@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Management</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background:#eef2f7; padding:30px; text-align:center; }
+    header { background:#007bff; color:white; padding:15px; border-radius:10px; margin-bottom:25px; }
+    table { border-collapse:collapse; width:90%; margin:auto; background:white; border-radius:12px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+    th,td { padding:12px; border:1px solid #ddd; text-align:center; }
+    th { background:#007bff; color:white; cursor:pointer; }
+    th.sortable:hover { background:#0056d6; }
+    .action-btn {
+      background:linear-gradient(135deg,#007bff,#0056d6);
+      color:white; border:none; padding:6px 12px; border-radius:8px;
+      cursor:pointer; font-weight:600; font-size:13px; transition:.2s;
+    }
+    .action-btn:hover { background:#0056b3; transform:scale(1.05); }
+    .delete-btn { background:linear-gradient(135deg,#dc3545,#b02a37); }
+    .delete-btn:hover { background:#a32029; }
+    .back-btn { margin-top:20px; padding:8px 18px; background:white; border:2px solid #007bff; border-radius:8px; cursor:pointer; }
+    .back-btn:hover { background:#007bff; color:white; }
+  </style>
+</head>
+<body>
+
+<header><h2>👨‍💼 Admin Accounts</h2></header>
+
+<table id="adminTable">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th class="sortable" onclick="sortTable(1)">Username ⬍</th>
+    <th>Password</th>
+    <th>Change Password</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  {% for a in admins %}
+  <tr>
+    <td>{{ a.id }}</td>
+    <td>{{ a.username }}</td>
+    <td>
+      <input type="password" value="{{ a.password }}" id="pw{{ loop.index }}" readonly style="border:none;background:none;width:130px;text-align:center;">
+      <button onclick="togglePassword('pw{{ loop.index }}')" style="border:none;background:none;cursor:pointer;">👁️</button>
+    </td>
+
+    <td>
+      <form action="/admins/{{ a.id }}/change_password" method="post" style="display:inline;">
+        <input type="text" name="new_password" placeholder="New password" required style="width:120px;">
+        <button type="submit" class="action-btn">Change</button>
+      </form>
+    </td>
+
+    <td>
+      <a href="/delete_admin/{{ a.id }}" onclick="return confirm('Delete this admin?');">
+        <button class="action-btn delete-btn">Remove</button>
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<button class="back-btn" onclick="window.location.href='/dashboard'">⬅️ Back to Dashboard</button>
+
+<script>
+function togglePassword(id){
+  const input=document.getElementById(id);
+  input.type=input.type==="password"?"text":"password";
+  setTimeout(()=>input.type="password",3000);
+}
+
+// SORTING FUNCTION
+function sortTable(columnIndex) {
+  var table = document.getElementById("adminTable");
+  var switching = true;
+  var direction = "asc";
+  var rows, i, x, y, shouldSwitch;
+
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+
+    for (i = 1; i < rows.length - 1; i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[columnIndex].innerText.toLowerCase();
+      y = rows[i + 1].getElementsByTagName("TD")[columnIndex].innerText.toLowerCase();
+
+      if ((direction == "asc" && x > y) || (direction == "desc" && x < y)) {
+        shouldSwitch = true;
+        break;
+      }
+    }
+
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    } else if (direction == "asc") {
+      direction = "desc";
+      switching = true;
+    }
+  }
+}
+</script>
+
+</body>
+</html>

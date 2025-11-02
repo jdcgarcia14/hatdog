@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Device Link Generated</title>
+<style>
+    /* --- Reset & Body --- */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* --- Card --- */
+    .card {
+        background: #fff;
+        padding: 40px 35px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        text-align: center;
+        width: 380px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+    }
+
+    /* --- Headings & Text --- */
+    h2 {
+        color: #007bff;
+        margin-bottom: 15px;
+    }
+    p {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    /* --- Input --- */
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 5px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    /* --- Buttons --- */
+    .btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 25px;
+        background-color: #007bff;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: background 0.3s, transform 0.2s;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+    .btn-secondary {
+        background-color: #28a745;
+        margin-left: 10px;
+    }
+    .btn-secondary:hover {
+        background-color: #1e7e34;
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 420px) {
+        .card {
+            width: 90%;
+            padding: 30px 20px;
+        }
+        input {
+            font-size: 13px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🔗 Device Registration Link Generated</h2>
+    <p>Copy and open this link on the device you want to register:</p>
+    <input type="text" id="deviceLink" value="{{ link }}" readonly>
+    <br>
+    <button class="btn" onclick="copyLink()">📋 Copy Link</button>
+    <a href="/dashboard" class="btn btn-secondary">🏠 Back to Dashboard</a>
+</div>
+
+<script>
+    function copyLink() {
+        const linkInput = document.getElementById('deviceLink');
+        linkInput.select();
+        linkInput.setSelectionRange(0, 99999); // For mobile devices
+        navigator.clipboard.writeText(linkInput.value).then(() => {
+            alert('✅ Link copied to clipboard!');
+        }).catch(() => {
+            alert('⚠️ Failed to copy link.');
+        });
+    }
+</script>
+
+</body>
+</html>

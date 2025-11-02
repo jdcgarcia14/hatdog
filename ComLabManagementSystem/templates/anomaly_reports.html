@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Device Monitoring & Registration</title>
+    <meta http-equiv="refresh" content="5"> <!-- auto refresh every 5 seconds -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 40px;
+        }
+        h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        hr {
+            margin: 30px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .timestamp {
+            color: #555;
+            font-size: 0.9em;
+        }
+        .no-data {
+            text-align: center;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Generate New Device Registration Link</h2>
+    <form action="/generate_link" method="post">
+        <button type="submit">Generate Link</button>
+    </form>
+
+    <hr>
+
+    <h2>Log Anomaly</h2>
+    <a href="/log_anomaly">Go to Anomaly Log Page</a>
+
+    <hr>
+
+    <h2>📋 Recent Anomaly Logs</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Device ID</th>
+                <th>Anomaly Type</th>
+                <th>Details</th>
+                <th>Detected At</th>
+                <th>Device Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if anomalies %}
+                {% for row in anomalies %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[3] }}</td>
+                    <td class="timestamp">{{ row[4] }}</td>
+                    <td>{{ row[5] }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="no-data">No anomalies recorded yet</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+</body>
+</html>

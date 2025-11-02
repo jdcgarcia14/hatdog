@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Portal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #6c5ce7, #00b894);
+        }
+
+        .container {
+            display: flex;
+            gap: 50px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            width: 200px;
+            text-align: center;
+            cursor: pointer;
+            padding: 30px 20px;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            background: #f0f4ff;
+        }
+
+        .card img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover img {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #2d3436;
+            font-weight: 600;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                gap: 20px;
+            }
+            .card {
+                width: 150px;
+                padding: 20px 15px;
+            }
+            .card img {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 15px;
+            }
+            .card h3 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    {% for option in options %}
+    <div class="card" onclick="location.href='{{ option.route }}'">
+        {% if option.name == 'Student' %}
+            <img src="https://lh4.googleusercontent.com/proxy/eTSa95SLon-ugeTjks-QLn1RG8QprBfx_skYoH36tcOXKvg_ciV26tI6n8vzgJTFRD4fGFLWN01yVMyc0mOtChQT1EagBmjW8n212J9XhKxNzo2nOQyZmL5eB0krhHo" alt="{{ option.name }}">
+        {% else %}
+            <img src="https://www.pngmart.com/files/21/Admin-Profile-Vector-PNG-Picture.png" alt="{{ option.name }}">
+        {% endif %}
+        <h3>{{ option.name }}</h3>
+        <p>Click to login</p>
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>

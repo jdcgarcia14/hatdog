@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register Device</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #eef2f7;
+        text-align: center;
+        padding: 50px;
+    }
+    form {
+        background: white;
+        display: inline-block;
+        padding: 30px 50px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+        color: #007bff;
+    }
+    input, select {
+        padding: 10px;
+        width: 250px;
+        margin: 10px 0;
+        border: 1px solid #007bff;
+        border-radius: 6px;
+    }
+    button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+</style>
+</head>
+<body>
+
+<h2>🖥️ Register a New Device</h2>
+
+<form method="POST">
+    <label>PC Tag:</label><br>
+    <input type="text" name="tag" required><br>
+    <label>ComLab Location:</label><br>
+    <select name="location" required>
+        <option value="">-- Select ComLab --</option>
+        {% for lab in comlabs %}
+            <option value="{{ lab.id }}">{{ lab.name }}</option>
+        {% endfor %}
+    </select><br>
+
+    <button type="submit">Register Device</button>
+</form>
+
+</body>
+</html>

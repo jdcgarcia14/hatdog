@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Management</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eef2f7;
+      padding: 20px;
+      text-align: center;
+    }
+    header {
+      background: #007bff;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    table {
+      border-collapse: collapse;
+      width: 95%;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+    th.sort-asc::after { content: " ▲"; font-size: 12px; }
+    th.sort-desc::after { content: " ▼"; font-size: 12px; }
+    th:hover { background: #0056b3; }
+
+    .status-none { color: green; font-weight: bold; display: inline-block; margin-right: 8px; }
+    .status-anomaly { color: red; font-weight: bold; display: inline-block; margin-right: 8px; }
+
+    .view-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .view-btn:hover {
+      background: #b02a37;
+      transform: scale(1.05);
+    }
+    .view-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .action-btn {
+      background: linear-gradient(135deg, #007bff, #0056d6);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 3px;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+      transition: all 0.2s ease-in-out;
+    }
+    .action-btn:hover {
+      background: linear-gradient(135deg, #0066cc, #004bb5);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 123, 255, 0.4);
+    }
+    .action-btn.success {
+      background: linear-gradient(135deg, #28a745, #1e7e34);
+      box-shadow: 0 3px 6px rgba(40, 167, 69, 0.3);
+    }
+    .action-btn.success:hover {
+      background: linear-gradient(135deg, #218838, #18632a);
+      box-shadow: 0 5px 10px rgba(40, 167, 69, 0.4);
+    }
+
+    .back-btn {
+      background: white;
+      color: #007bff;
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-top: 25px;
+      box-shadow: 0 3px 6px rgba(0, 123, 255, 0.1);
+    }
+    .back-btn:hover {
+      background: #007bff;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 12px rgba(0, 123, 255, 0.3);
+    }
+
+    .filter-bar {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    .filter-input, .filter-select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .filter-input { width: 250px; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      text-align: left;
+    }
+    .modal-content h3 { margin-top: 0; color: #007bff; }
+    .close { float: right; font-size: 22px; cursor: pointer; color: #555; }
+    .close:hover { color: #000; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 15px; border-top: 1px solid #ddd; background-color: #f9fbfd; }
+    .btn-close-modal, .btn-print-modal {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .btn-close-modal:hover { background: #c0392b; transform: scale(1.05); }
+    .btn-print-modal:hover { background: #0056b3; transform: scale(1.05); }
+
+    @media print {
+      .modal-footer, .btn-close-modal, .btn-print-modal { display: none !important; }
+    }
+
+    #anomalyTable th, #anomalyTable td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    #anomalyTable th { background: #007bff; color: white; }
+  </style>
+
+</head>
+<body>
+
+<header>
+  <h2>👨‍🎓 Student Management</h2>
+</header>
+
+<div class="filter-bar">
+  <input type="text" id="idFilter" class="filter-input" placeholder="🔍 Search by ID Number..." onkeyup="filterTable()">
+  <input type="text" id="gradeFilter" class="filter-input" placeholder="🔍 Search by Grade & Section..." onkeyup="filterTable()">
+  <select id="anomalyFilter" class="filter-select" onchange="filterTable()">
+    <option value="all">All Students</option>
+    <option value="with">With Anomalies</option>
+    <option value="without">Without Anomalies</option>
+  </select>
+</div>
+
+<table id="studentTable">
+  <thead>
+    <tr>
+      <th onclick="sortTable(0)">ID</th>
+      <th onclick="sortTable(1)">Name</th>
+      <th onclick="sortTable(2)">Grade & Section</th>
+      <th>Password</th>
+      <th onclick="sortTable(4)">Number of Anomalies</th>
+      <th>Change Password</th>
+        <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in students %}
+    <tr data-hasanomaly="{{ 'true' if s.has_anomaly else 'false' }}">
+      <td>{{ s.student_id }}</td>
+      <td>{{ s.student_name }}</td>
+      <td>{{ s.grade_section }}</td>
+      <td>
+        {% if s.password %}
+          <input type="password" value="{{ s.password }}" id="pw{{ loop.index }}" readonly style="border:none; background:none; width:120px; text-align:center;">
+          <button onclick="togglePassword('pw{{ loop.index }}')" style="border:none; background:none; cursor:pointer;">👁️</button>
+        {% else %}
+          <span style="color:#999;">—</span>
+        {% endif %}
+      </td>
+      <td style="text-align:center;">
+        {% if s.has_anomaly %}
+          <span class="status-anomaly">{{ s.anomaly_count }}</span><br>
+          <button class="view-btn" onclick="openAnomalyModal('{{ s.student_id }}', '{{ s.student_name }}', '{{ s.grade_section }}')">View</button>
+        {% else %}
+          <span class="status-none">0</span>
+        {% endif %}
+      </td>
+      <td>
+        <form action="/students/{{ s.student_id }}/change_password" method="post" style="display:inline;">
+          <input type="text" name="new_password" placeholder="New password" required style="width:120px;">
+          <button type="submit" class="action-btn">Change</button>
+        </form>
+      </td>
+        <td>
+            <form action="/delete_student/{{ s.student_id }}" method="post" style="display:inline;">
+          <button type="submit" class="action-btn success">Remove Student</button>
+        </form>
+        </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<button class="back-btn" onclick="window.location.href='/dashboard'">⬅️ Back to Dashboard</button>
+
+<!-- 🔍 Anomaly Modal -->
+<div id="anomalyModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeAnomalyModal()">&times;</span>
+    <h3>Student Anomaly Details</h3>
+    <p><strong>Student ID:</strong> <span id="mStudentId"></span></p>
+    <p><strong>Name:</strong> <span id="mStudentName"></span></p>
+    <p><strong>Grade & Section:</strong> <span id="mGradeSection"></span></p>
+
+    <table id="anomalyTable">
+      <thead>
+        <tr>
+          <th>Anomaly Found</th>
+          <th>Details</th>
+          <th>Timestamp</th>
+          <th>PC Tag</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="modal-footer no-print">
+      <button class="btn-close-modal" onclick="closeAnomalyModal()">Close</button>
+      <button class="btn-print-modal" onclick="printAnomalyReport()">🖨️ Print PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === "password" ? "text" : "password";
+  setTimeout(() => input.type = "password", 3000);
+}
+
+// Sorting
+function sortTable(colIndex) {
+  const table = document.getElementById("studentTable");
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows);
+  const headers = table.querySelectorAll("th");
+
+  headers.forEach(h => h.classList.remove("sort-asc", "sort-desc"));
+  let dir = table.dataset.sortDir === "asc" ? "desc" : "asc";
+  table.dataset.sortDir = dir;
+  table.dataset.sortCol = colIndex;
+  headers[colIndex].classList.add(dir === "asc" ? "sort-asc" : "sort-desc");
+
+  rows.sort((a, b) => {
+    let x = a.cells[colIndex].innerText.trim();
+    let y = b.cells[colIndex].innerText.trim();
+    const xNum = parseFloat(x.replace(/[^\d.-]/g, ""));
+    const yNum = parseFloat(y.replace(/[^\d.-]/g, ""));
+    const bothNumbers = !isNaN(xNum) && !isNaN(yNum);
+    return bothNumbers
+      ? (dir === "asc" ? xNum - yNum : yNum - xNum)
+      : (dir === "asc" ? x.localeCompare(y) : y.localeCompare(x));
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+// Filter
+function filterTable() {
+  const idInput = document.getElementById("idFilter").value.toLowerCase();
+  const gradeInput = document.getElementById("gradeFilter").value.toLowerCase();
+  const anomalyFilter = document.getElementById("anomalyFilter").value;
+  const rows = document.querySelectorAll("#studentTable tbody tr");
+
+  rows.forEach(row => {
+    const studentId = row.cells[0].textContent.toLowerCase();
+    const grade = row.cells[2].textContent.toLowerCase();
+    const hasAnomaly = row.dataset.hasanomaly === "true";
+    let show = true;
+    if (idInput && !studentId.includes(idInput)) show = false;
+    if (gradeInput && !grade.includes(gradeInput)) show = false;
+    if (anomalyFilter === "with" && !hasAnomaly) show = false;
+    if (anomalyFilter === "without" && hasAnomaly) show = false;
+    row.style.display = show ? "" : "none";
+  });
+}
+
+// Modal functions
+function openAnomalyModal(studentId, name, gradeSection) {
+  document.getElementById("anomalyModal").style.display = "flex";
+  document.getElementById("mStudentId").textContent = studentId;
+  document.getElementById("mStudentName").textContent = name;
+  document.getElementById("mGradeSection").textContent = gradeSection;
+
+  fetch(`/api/student_anomalies/${studentId}`)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector("#anomalyTable tbody");
+      tbody.innerHTML = "";
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:#888;">No anomalies found</td></tr>`;
+      } else {
+        data.forEach(a => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${a.anomaly_type}</td>
+            <td>${a.details}</td>
+            <td>${a.detected_at}</td>
+            <td>${a.pc_tag}</td>
+            <td>
+              <button class="view-btn" style="background:#dc3545;">Delete</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+
+          // Pass the identifying fields to deleteAnomaly
+          row.querySelector("button").addEventListener("click", () => {
+            deleteAnomaly({
+                 id: a.id,
+              student_id: a.student_id,
+              detected_at: a.detected_at,
+              pc_tag: a.pc_tag
+            }, row);
+          });
+        });
+      }
+    });
+}
+
+function deleteAnomaly(payload, row) {
+  if (!confirm("Are you sure you want to delete this anomaly?")) return;
+
+  fetch("/api/delete_anomaly", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(res => {
+    if (res.ok) {
+        row.remove();
+        alert("Anomaly deleted successfully.");
+        closeAnomalyModal();  // optional: close modal
+        location.reload();    // reload students page to update counts
+    }
+    else alert("Failed to delete anomaly.");
+  })
+  .catch(err => { console.error(err); alert("Error deleting anomaly."); });
+}
+
+function closeAnomalyModal() { document.getElementById("anomalyModal").style.display = "none"; }
+
+window.onclick = function(event) {
+  const modal = document.getElementById("anomalyModal");
+  if (event.target === modal) modal.style.display = "none";
+}
+
+function printAnomalyReport() {
+  const modal = document.getElementById("anomalyModal");
+  const printContents = modal.cloneNode(true);
+  const noPrintElements = printContents.querySelectorAll(".no-print");
+  noPrintElements.forEach(el => el.remove());
+
+  const win = window.open("", "", "height=700,width=900");
+  win.document.write(`
+    <html>
+      <head>
+        <title>Student Anomaly Report</title>
+        <style>
+          body { font-family: 'Segoe UI', sans-serif; padding: 20px; }
+          h2, h3 { text-align: center; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+          th { background: #007bff; color: white; }
+        </style>
+      </head>
+      <body>${printContents.innerHTML}</body>
+    </html>
+  `);
+  win.document.close();
+  win.focus();
+  win.print();
+}
+</script>
+
+</body>
+</html>

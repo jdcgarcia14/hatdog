@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ComLab {{ comlab_id }} - Summary</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f3f6fa;
+            text-align: center;
+            padding: 30px;
+        }
+        header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        .stat-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 30px;
+            width: 220px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .stat-box:hover {
+            transform: scale(1.05);
+        }
+        .stat-title {
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        canvas {
+            max-width: 850px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: white;
+            color: #007bff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 25px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #e7f1ff;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>📊 Anomaly Summary - ComLab {{ comlab_id }}</h2>
+</header>
+
+<div class="stats-container">
+    <div class="stat-box">
+        <div class="stat-title">Total Devices</div>
+        <div class="stat-value">{{ total_devices }}</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-title">Total Anomalies</div>
+        <div class="stat-value">{{ total_anomalies }}</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-title">Students with Anomalies</div>
+        <div class="stat-value">{{ students_with_anomalies }}</div>
+    </div>
+</div>
+
+<canvas id="summaryChart"></canvas>
+
+<button onclick="window.location.href='/comlab/{{ comlab_id }}'">⬅️ Back to Devices</button>
+
+<script>
+    const labels = {{ summary|map(attribute='device_tag')|list|tojson }};
+    const data = {{ summary|map(attribute='anomaly_count')|list|tojson }};
+
+    new Chart(document.getElementById('summaryChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Anomalies per Device',
+                data: data,
+                borderWidth: 1,
+                backgroundColor: '#007bffaa'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: "Count" } },
+                x: { title: { display: true, text: "Device" } }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

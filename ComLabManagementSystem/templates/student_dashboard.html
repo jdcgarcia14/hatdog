@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="10">
+  <title>{{ student.name }}'s Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    header {
+      background: #007bff;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      margin-bottom: 40px;
+    }
+
+    header h2 {
+      margin: 0;
+    }
+
+    button.logout-btn {
+      background: white;
+      color: #007bff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button.logout-btn:hover {
+      background: #e7f1ff;
+    }
+
+    .dashboard-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      padding: 25px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    h3 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background: #007bff;
+      color: white;
+    }
+
+    td {
+      background: #fafafa;
+    }
+
+    .no-anomalies {
+      text-align: center;
+      color: #666;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2>👩‍💻 Welcome, {{ student.name }}</h2>
+  <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+</header>
+
+<div class="dashboard-container">
+  <h3>📜 Your Anomaly History</h3>
+
+  {% if anomalies and anomalies|length > 0 %}
+  <table>
+    <thead>
+      <tr>
+        <th>ComLab</th>
+        <th>PC Tag</th>
+        <th>Anomaly Type</th>
+        <th>Details</th>
+        <th>Detected At</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in anomalies %}
+      <tr>
+        <td>{{ a.comlab_name }}</td>
+        <td>{{ a.pc_tag }}</td>
+        <td>{{ a.anomaly_type }}</td>
+        <td>{{ a.details }}</td>
+        <td>{{ a.detected_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="no-anomalies">✅ You currently have no anomaly records. Great job!</p>
+  {% endif %}
+</div>
+
+</body>
+</html>

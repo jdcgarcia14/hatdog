@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Login</title>
+<style>
+body { font-family: Arial; background: #eef2f7; display: flex; justify-content: center; align-items: center; height: 100vh; }
+.card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; }
+button { width: 95%; padding: 10px; border-radius: 8px; border: none; background: #007bff; color: white; cursor: pointer; font-weight: bold; }
+button:hover { background: #0056b3; }
+.flash { color: red; margin-bottom: 10px; }
+.back-btn { margin-top: 15px; background: #6c757d; }
+.back-btn:hover { background: #495057; }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Admin Login</h2>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+        <p>Don't have an account? <a href="{{ url_for('register_admin') }}">Create one here</a></p>
+    </form>
+    <form action="{{ url_for('index') }}">
+        <button type="submit" class="back-btn">Back to Role Selection</button>
+    </form>
+</div>
+
+</body>
+</html>

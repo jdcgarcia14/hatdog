@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="10">
+
+    <title>ComLab {{ comlab_id }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f7;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #007bff;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        header h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .menu-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .menu-buttons button {
+            background: white;
+            color: #007bff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .menu-buttons button:hover {
+            background: #e7f1ff;
+            transform: scale(1.05);
+        }
+
+        /* AI Alert Box */
+        .ai-alert-box {
+            background: #fff8e1;
+            border: 1px solid #ffd54f;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px auto;
+            max-width: 900px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        .alert-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .alert-card p {
+            margin: 0;
+            color: #856404;
+            font-weight: 500;
+        }
+
+        .view-details-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .view-details-btn:hover {
+            background: #0056b3;
+        }
+
+        /* Toggle Button */
+        .toggle-ai-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 15px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .toggle-ai-btn:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        /* Smooth show/hide animation */
+        .hidden {
+            display: none;
+        }
+
+        /* Details Table */
+        .details-table {
+            margin-top: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+        .details-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .details-table th, .details-table td {
+            border-bottom: 1px solid #eee;
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .details-table th {
+            background: #007bff;
+            color: white;
+        }
+
+        /* Devices Table */
+        table.devices {
+            border-collapse: collapse;
+            margin: 30px auto 0;
+            width: 85%;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table.devices th, table.devices td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        table.devices th {
+            background: #007bff;
+            color: white;
+        }
+
+        .status-used { color: green; font-weight: bold; }
+        .status-free { color: red; font-weight: bold; }
+
+        .delete-device-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .delete-device-btn:hover { background-color: #c82333; }
+
+        @media (max-width: 900px) {
+            header { flex-direction: column; gap: 10px; }
+            table.devices { width: 95%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>💻 Devices in ComLab {{ comlab_id }}</h2>
+    <div class="menu-buttons">
+        <button onclick="window.location.href='/dashboard'">🏠 Back to Dashboard</button>
+        <button onclick="window.location.href='/comlab/{{ comlab_id }}/anomalies'">📋 View Reports</button>
+        <button onclick="window.location.href='/comlab/{{ comlab_id }}/summary'">📊 View Summary</button>
+    </div>
+</header>
+
+<!-- 🧠 AI ALERT NOTIFICATIONS -->
+{% if ai_alerts and ai_alerts|length > 0 %}
+<button class="toggle-ai-btn" onclick="toggleAIHistory()">Show / Hide AI Notification History</button>
+
+<div id="ai-history" class="ai-alert-box hidden">
+  <h3>🧠 AI Notifications</h3>
+  {% for alert in ai_alerts %}
+  <div class="alert-card">
+    <p><strong>⚠️ Potential faulty device detected in {{ alert.pc_tag }}</strong> ({{ alert.count }} anomalies in last 10 mins)</p>
+    <button class="view-details-btn" onclick="toggleDetails('{{ alert.pc_tag }}')">View Details</button>
+  </div>
+
+  <div id="details-{{ alert.pc_tag }}" class="details-table hidden">
+    <table>
+      <thead>
+        <tr>
+          <th>Anomaly Type</th>
+          <th>Details</th>
+          <th>Student (ID)</th>
+          <th>Timestamp</th>
+          <th>PC TAG</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in anomalies if a.pc_tag == alert.pc_tag %}
+        <tr>
+          <td>{{ a.anomaly_type }}</td>
+          <td>{{ a.details }}</td>
+          <td>{{ a.student_name }} ({{ a.student_id }})</td>
+          <td>{{ a.detected_at }}</td>
+          <td>{{ a.pc_tag }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="ai-alert-box">
+  <p>✅ No current AI notifications</p>
+</div>
+{% endif %}
+
+<!-- 💻 Devices Table -->
+<table class="devices">
+    <tr>
+        <th>Device ID</th>
+        <th>PC Tag</th>
+        <th>Assigned Student</th>
+        <th>Status</th>
+        <th>Action</th> <!-- New column for Delete button -->
+    </tr>
+    {% for device in devices %}
+    <tr id="device-row-{{ device.id }}">
+        <td>{{ device.id }}</td>
+        <td>{{ device.tag or '—' }}</td>
+        <td>
+            {% if device.used %}
+                {{ device.assigned_student }}
+            {% else %}
+                None
+            {% endif %}
+        </td>
+        <td>
+            {% if device.used %}
+                <span class="status-used">In Use</span>
+            {% else %}
+                <span class="status-free">Available</span>
+            {% endif %}
+        </td>
+        <td>
+            <button class="delete-device-btn" onclick="deleteDevice('{{ device.id }}')">Delete</button>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- 🔁 JS TOGGLE AND DELETE FUNCTIONS -->
+<script>
+function toggleAIHistory() {
+  const box = document.getElementById('ai-history');
+  box.classList.toggle('hidden');
+}
+
+function toggleDetails(tag) {
+  const el = document.getElementById('details-' + tag);
+  el.classList.toggle('hidden');
+}
+
+function deleteDevice(deviceId) {
+    if (!confirm("Are you sure you want to delete this device?")) return;
+
+    fetch(`/api/delete_device`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: deviceId })
+    })
+    .then(res => res.json())
+    .then(resp => {
+        if (resp.success) {
+            const row = document.getElementById(`device-row-${deviceId}`);
+            if (row) row.remove();
+        } else {
+            alert("Failed to delete device: " + (resp.message || ""));
+        }
+    })
+    .catch(err => { console.error(err); alert("Error deleting device."); });
+}
+</script>
+
+</body>
+</html>
